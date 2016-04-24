@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.io.File;
@@ -68,13 +69,40 @@ public class GraycoderCore {
 
 	}
 
+	public static ArrayList<String> convertToGCodePoints(float[][] p, int travelSpeed, int laserSpeed) {
+
+		ArrayList<String> gcodeList = new ArrayList<String>();
+
+		String home = String.format("G0 X0 Y0 F%d", travelSpeed);
+		gcodeList.add(home);
+
+		for (int i = 0; i < p.length; i++) {
+
+			String startLine = String.format("G0 X0 Y%d F%d", i, travelSpeed);
+			gcodeList.add(startLine);
+
+			for (int j = 0; j < p[0].length; j++) {
+
+				String command = String.format("G1 X%d Y%d F%d S%.3f ", j + 1, i, laserSpeed, p[i][j]);
+				gcodeList.add(command);
+
+			}
+
+		}
+
+		gcodeList.add(home);
+
+		return gcodeList;
+
+	}
+
 	public static void main(String[] args) {
 
 		BufferedImage coloredImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
 		try {
 
-			coloredImage = ImageIO.read(new File("test.png"));
+			coloredImage = ImageIO.read(new File("test.jpg"));
 
 		} catch (IOException e) {
 
@@ -84,16 +112,11 @@ public class GraycoderCore {
 
 		float[][] gray = GraycoderCore.convertToGray(coloredImage);
 		float[][] power = GraycoderCore.convertToPower(gray, 0.17f, 1.0f);
+		ArrayList<String> gcode = GraycoderCore.convertToGCodePoints(power, 2000, 1000);
 
-		for (int i = 0; i < power.length; i++) {
+		for (String s : gcode) {
 
-			for (int j = 0; j < power[0].length; j++) {
-
-				System.out.printf("%.2f  ", power[i][j]);
-
-			}
-
-			System.out.println();
+			System.out.println(s);
 
 		}
 
