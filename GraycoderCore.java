@@ -59,7 +59,8 @@ public class GraycoderCore {
 
 			for (int j = 0; j < gray[0].length; j++) {
 
-				power[i][j] = ((1.0f - gray[i][j]) * width) + low;
+				float powerLevel = ((1.0f - gray[i][j]) * width) + low;
+				power[i][j] = powerLevel;
 
 			}
 
@@ -102,7 +103,7 @@ public class GraycoderCore {
 
 		try {
 
-			coloredImage = ImageIO.read(new File("test.jpg"));
+			coloredImage = ImageIO.read(new File("test.png"));
 
 		} catch (IOException e) {
 
@@ -111,8 +112,8 @@ public class GraycoderCore {
 		}
 
 		float[][] gray = GraycoderCore.convertToGray(coloredImage);
-		float[][] power = GraycoderCore.convertToPower(gray, 0.17f, 1.0f);
-		ArrayList<String> gcode = GraycoderCore.convertToGCodePoints(power, 2000, 1000);
+		float[][] power = GraycoderCore.convertToPower(gray, 0.150f, 0.190f);
+		ArrayList<String> gcode = GraycoderCore.convertToGCodePoints(power, 2000, 2000);
 
 		for (String s : gcode) {
 
