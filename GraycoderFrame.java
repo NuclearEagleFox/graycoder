@@ -5,6 +5,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import java.awt.GridLayout;
 
 public class GraycoderFrame extends JFrame implements ActionListener {
 
@@ -13,6 +14,7 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 	private BufferedImage powerImage;
 
 	private File imageFile;
+	private File outputFile;
 
 	private float maximum;
 	private float minimum;
@@ -28,12 +30,18 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 	private JButton selectImageButton;
 
 	private JFileChooser imageChooser;
+	private JFileChooser outputChooser;
 
 	private JFrame imageFrame;
+	private JFrame outputFrame;
+	private JFrame previewFrame;
 
 	private JLabel cutLabel;
+	private JLabel grayLabel;
 	private JLabel maximumLabel;
 	private JLabel minimumLabel;
+	private JLabel originalLabel;
+	private JLabel powerLabel;
 	private JLabel travelLabel;
 
 	private JTextField cutField;
@@ -48,6 +56,8 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 		settingsMap = new HashMap<String, String>();
 
 		loadSettings();
+
+		imageFile = new File(settingsMap.get("default image"));
 
 		setLayout(new GridLayout(12, 1));
 
@@ -95,15 +105,9 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 		generateButton.addActionListener(this);
 		add(generateButton);
 
-		imageChooser = new JFileChooser();
-		imageChooser.addActionListener(this);
-
-		imageFrame = new JFrame("Choose Input Image");
-		imageFrame.add(imageChooser);
-		imageFrame.setVisible(true);
-
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		pack();
 		setVisible(true);
 
 	}
@@ -152,32 +156,76 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 
 			}
 
-			//this line is causing issues, original image is null
 			float[][] gray = GraycoderCore.convertToGray(originalImage);
-
-			try {
-
-				float low = Float.parseFloat(minimumField.getText());
-				float high = Float.parseFloat(maximumField.getText());
-				float[][] power = GraycoderCore.convertToPower(gray, low, high);
-				int travel = Integer.parseInt(travelField.getText());
-				int cut = Integer.parseInt(cutField.getText());
-				ArrayList<String> gcode = GraycoderCore.convertToGCodePoints(power, travel, cut);
-				GraycoderCore.writeToFile("output.txt", gcode);
-
-			} catch (Exception ex) {
-
-				System.out.println("Message: " + ex.getMessage());
-
-			}
+			float low = Float.parseFloat(minimumField.getText());
+			float high = Float.parseFloat(maximumField.getText());
+			float[][] power = GraycoderCore.convertToPower(gray, low, high);
+			int travel = Integer.parseInt(travelField.getText());
+			int cut = Integer.parseInt(cutField.getText());
+			ArrayList<String> gcode = GraycoderCore.convertToGCodePoints(power, travel, cut);
+			GraycoderCore.writeToFile("output.txt", gcode);
 
 		} else if ("image".equals(command)) {
 
-			imageChooser.setVisible(true);
+			imageChooser = new JFileChooser();
+			imageChooser.addActionListener(this);
+
+			imageFrame = new JFrame("Choose Input Image");
+			imageFrame.add(imageChooser);
+			imageFrame.pack();
+			imageFrame.setVisible(true);
 
 		} else if ("output".equals(command)) {
 
+			outputChooser = new JFileChooser();
+			outputChooser.addActionListener(this);
+
+			outputFrame = new JFrame("Chooser Output File");
+			outputFrame.add(outputChooser);
+			outputFrame.pack();
+			outputFrame.setVisible(true);
+
 		} else if ("preview".equals(command)) {
+
+			try {
+
+				originalImage = ImageIO.read(imageFile);
+
+			} catch (IOException ex) {
+
+				System.out.println("Error! Could not read image.");
+
+			}
+
+			grayImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+			float[][] gray = GraycoderCore.convertToGray(originalImage);
+			grayImage = GraycoderCore.convertToGrayImage(gray);
+			float low = Float.parseFloat(minimumField.getText());
+			float high = Float.parseFloat(maximumField.getText());
+			float[][] power = GraycoderCore.convertToPower(gray, low, high);
+
+			for (int i = 0; i < power.length; i++) {
+
+				for (int j = 0; j < power[0].length; j++) {
+
+					power[i][j] = 1.0f - power[i][j];
+
+				}
+
+			}
+
+			powerImage = GraycoderCore.convertToGrayImage(power);
+
+			previewFrame = new JFrame("Preview");
+			previewFrame.setLayout(new GridLayout(1, 3));
+			originalLabel = new JLabel(new ImageIcon(originalImage));
+			grayLabel = new JLabel(new ImageIcon(grayImage));
+			powerLabel = new JLabel(new ImageIcon(powerImage));
+			previewFrame.add(originalLabel);
+			previewFrame.add(grayLabel);
+			previewFrame.add(powerLabel);
+			previewFrame.pack();
+			previewFrame.setVisible(true);
 
 		} else if ("ApproveSelection".equals(command)) {
 
@@ -186,6 +234,11 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 				imageFile = imageChooser.getSelectedFile();
 				imageFrame.dispose();
 
+			} else if (e.getSource() == outputChooser) {
+
+				outputFile = outputChooser.getSelectedFile();
+				outputFrame.dispose();
+
 			}
 
 		} else if ("CancelSelection".equals(command)) {
@@ -193,6 +246,10 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 			if (e.getSource() == imageChooser) {
 
 				imageFrame.dispose();
+
+			} else if (e.getSource() == outputChooser) {
+
+				outputFrame.dispose();
 
 			}
 

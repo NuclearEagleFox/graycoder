@@ -21,7 +21,7 @@ public class GraycoderCore {
 
 				Color currentColor = new Color(image.getRGB(j, i));
 				float[] hsb = Color.RGBtoHSB(currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue(), null);
-				//grayArray[i][j] = hsb[2];
+				grayArray[i][j] = hsb[2];
 
 			}
 
@@ -33,20 +33,23 @@ public class GraycoderCore {
 
 	public static BufferedImage convertToGrayImage(float[][] grays) {
 
-		BufferedImage image = new BufferedImage(grays[0].length, grays.length, BufferedImage.TYPE_INT_ARGB);
+		int height = grays.length;
+		int width = grays[0].length;
 
-		for (int i = 0; i < grays.length; i++) {
+		BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
-			for (int j = 0; j < grays[0].length; j++) {
+		for (int i = 0; i < width; i++) {
 
-				int colorInt = Color.HSBtoRGB(0.0f, 0.0f, grays[i][j]);
-				image.setRGB(j, i, colorInt);
+			for (int j = 0; j < height; j++) {
+
+				int color = Color.HSBtoRGB(0.0f, 0.0f, grays[j][i]);
+				newImage.setRGB(i, j, color);
 
 			}
 
 		}
 
-		return image;
+		return newImage;
 
 	}
 
@@ -98,6 +101,29 @@ public class GraycoderCore {
 
 	}
 
+	public void copyImage(BufferedImage source, BufferedImage destination) {
+
+		int sourceHeight = source.getHeight();
+		int sourceWidth = source.getWidth();
+		int destinationHeight = destination.getHeight();
+		int destinationWidth = destination.getWidth();
+
+		if (sourceHeight == destinationHeight && sourceWidth == destinationWidth) {
+
+			for (int i = 0; i < sourceWidth; i++) {
+
+				for (int j = 0; j < sourceHeight; j++) {
+
+					destination.setRGB(i, j, source.getRGB(i, j));
+
+				}
+
+			}
+
+		}
+
+	}
+
 	public static void writeToFile(String filename, ArrayList<String> gcode) {
 
 		try {
@@ -119,26 +145,5 @@ public class GraycoderCore {
 		}
 
 	}
-
-	/*public static void main(String[] args) {
-
-		BufferedImage coloredImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-
-		try {
-
-			coloredImage = ImageIO.read(new File("test.png"));
-
-		} catch (IOException e) {
-
-			System.out.println("Error! Could not read image.");
-
-		}
-
-		float[][] gray = GraycoderCore.convertToGray(coloredImage);
-		float[][] power = GraycoderCore.convertToPower(gray, 0.150f, 0.190f);
-		ArrayList<String> gcode = GraycoderCore.convertToGCodePoints(power, 2000, 2000);
-		GraycoderCore.writeToFile("output.txt", gcode);
-
-	}*/
 
 }
