@@ -167,6 +167,7 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 			float low = Float.parseFloat(minimumField.getText());
 			float high = Float.parseFloat(maximumField.getText());
 			float[][] power = GraycoderCore.convertToPower(gray, low, high);
+			GraycoderCore.reflectX(power);
 			int travel = Integer.parseInt(travelField.getText());
 			int cut = Integer.parseInt(cutField.getText());
 			int passes = Integer.parseInt(passesField.getText());
