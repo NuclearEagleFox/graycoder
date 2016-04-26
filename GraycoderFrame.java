@@ -149,8 +149,6 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 
 		String command = e.getActionCommand();
 
-		System.out.println("ActionCommand: " + command);
-
 		if ("generate".equals(command)) {
 
 			originalImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
