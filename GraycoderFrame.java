@@ -43,12 +43,14 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 	private JLabel originalLabel;
 	private JLabel passesLabel;
 	private JLabel powerLabel;
+	private JLabel stepsLabel;
 	private JLabel travelLabel;
 
 	private JTextField cutField;
 	private JTextField maximumField;
 	private JTextField minimumField;
 	private JTextField passesField;
+	private JTextField stepsField;
 	private JTextField travelField;
 
 	public GraycoderFrame() {
@@ -62,7 +64,7 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 		imageFile = new File(settingsMap.get("default image"));
 		outputFile = new File(settingsMap.get("default output"));
 
-		setLayout(new GridLayout(14, 1));
+		setLayout(new GridLayout(8, 1));
 
 		minimumLabel = new JLabel("Minimum Power:");
 		add(minimumLabel);
@@ -93,6 +95,12 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 
 		passesField = new JTextField(settingsMap.get("outline passes"));
 		add(passesField);
+
+		stepsLabel = new JLabel("Steps Per Pixel:");
+		add(stepsLabel);
+
+		stepsField = new JTextField(settingsMap.get("steps per pixel"));
+		add(stepsField);
 
 		selectImageButton = new JButton("Select Input Image");
 		selectImageButton.setActionCommand("image");
@@ -171,7 +179,8 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 			int travel = Integer.parseInt(travelField.getText());
 			int cut = Integer.parseInt(cutField.getText());
 			int passes = Integer.parseInt(passesField.getText());
-			ArrayList<String> gcode = GraycoderCore.convertToGCode(power, travel, cut, passes);
+			double steps = Double.parseDouble(stepsField.getText());
+			ArrayList<String> gcode = GraycoderCore.convertToGCode(power, travel, cut, passes, steps);
 			GraycoderCore.writeToFile(outputFile, gcode);
 
 		} else if ("image".equals(command)) {
