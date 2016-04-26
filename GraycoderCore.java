@@ -74,7 +74,7 @@ public class GraycoderCore {
 
 	}
 
-	public static ArrayList<String> convertToGCodePoints(float[][] p, int travelSpeed, int cutSpeed) {
+	public static ArrayList<String> convertToGCode(float[][] p, int travelSpeed, int cutSpeed, int outlinePasses) {
 
 		ArrayList<String> gcodeList = new ArrayList<String>();
 
@@ -92,6 +92,22 @@ public class GraycoderCore {
 				gcodeList.add(command);
 
 			}
+
+		}
+
+		int height = p.length;
+		int width = p[0].length;
+
+		for (int i = 0; i < outlinePasses; i++) {
+
+			String command1 = String.format("G1 X%d Y0 F%d S1.0 %n", width, cutSpeed);
+			String command2 = String.format("G1 X%d Y%d F%d S1.0 %n", width, height, cutSpeed);
+			String command3 = String.format("G1 X0 Y%d F%d S1.0 %n", height, cutSpeed);
+			String command4 = String.format("G1 X0 Y0 F%d S1.0 %n", cutSpeed);
+			gcodeList.add(command1);
+			gcodeList.add(command2);
+			gcodeList.add(command3);
+			gcodeList.add(command4);
 
 		}
 
@@ -124,11 +140,11 @@ public class GraycoderCore {
 
 	}
 
-	public static void writeToFile(String filename, ArrayList<String> gcode) {
+	public static void writeToFile(File outputFile, ArrayList<String> gcode) {
 
 		try {
 
-			FileWriter output = new FileWriter(new File(filename));
+			FileWriter output = new FileWriter(outputFile);
 
 			for (String s : gcode) {
 

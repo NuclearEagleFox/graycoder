@@ -15,3 +15,5 @@
 *.BAT
 
 *.db
+*.txt
+*.gcode
