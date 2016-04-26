@@ -11,7 +11,7 @@
 *.png
 
 # Batch Files #
-*.BAT
+#*.BAT
 
 *.db
 *.txt
