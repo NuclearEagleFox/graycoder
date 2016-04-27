@@ -34,10 +34,11 @@ public class GraycoderCore {
 
 		for (int i = 0; i < outlinePasses; i++) {
 
-			String command1 = String.format("G1 X%d Y0 F%d S1.0 %n", stepsPerPixel * width, cutSpeed);
-			String command2 = String.format("G1 X%d Y%d F%d S1.0 %n", stepsPerPixel * width, stepsPerPixel * height, cutSpeed);
-			String command3 = String.format("G1 X0 Y%d F%d S1.0 %n", stepsPerPixel * height, cutSpeed);
+			String command1 = String.format("G1 X%.3f Y0 F%d S1.0 %n", stepsPerPixel * width, cutSpeed);
+			String command2 = String.format("G1 X%.3f Y%.3f F%d S1.0 %n", stepsPerPixel * width, stepsPerPixel * height, cutSpeed);
+			String command3 = String.format("G1 X0 Y%.3f F%d S1.0 %n", stepsPerPixel * height, cutSpeed);
 			String command4 = String.format("G1 X0 Y0 F%d S1.0 %n", cutSpeed);
+			gcodeList.add(home);
 			gcodeList.add(command1);
 			gcodeList.add(command2);
 			gcodeList.add(command3);
