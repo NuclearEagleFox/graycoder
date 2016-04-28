@@ -15,6 +15,25 @@ public class GraycoderCore {
 		String home = String.format("G0 X0 Y0 F%d %n", travelSpeed);
 		gcodeList.add(home);
 
+		int height = p.length;
+		int width = p[0].length;
+
+		for (int i = 0; i < outlinePasses; i++) {
+
+			String command1 = String.format("G1 X%.3f Y0 F%d S1.0%n", stepsPerPixel * width, cutSpeed);
+			String command2 = String.format("G1 X%.3f Y%.3f F%d S1.0%n", stepsPerPixel * width, stepsPerPixel * height, cutSpeed);
+			String command3 = String.format("G1 X0 Y%.3f F%d S1.0%n", stepsPerPixel * height, cutSpeed);
+			String command4 = String.format("G1 X0 Y0 F%d S1.0%n", cutSpeed);
+			gcodeList.add(home);
+			gcodeList.add(command1);
+			gcodeList.add(command2);
+			gcodeList.add(command3);
+			gcodeList.add(command4);
+
+		}
+
+		gcodeList.add(home);
+
 		for (int i = 0; i < p.length; i++) {
 
 			String startLine = String.format("G0 X0 Y%.3f F%d %n", stepsPerPixel * i, travelSpeed);
@@ -26,23 +45,6 @@ public class GraycoderCore {
 				gcodeList.add(command);
 
 			}
-
-		}
-
-		int height = p.length;
-		int width = p[0].length;
-
-		for (int i = 0; i < outlinePasses; i++) {
-
-			String command1 = String.format("G1 X%.3f Y0 F%d S1.0 %n", stepsPerPixel * width, cutSpeed);
-			String command2 = String.format("G1 X%.3f Y%.3f F%d S1.0 %n", stepsPerPixel * width, stepsPerPixel * height, cutSpeed);
-			String command3 = String.format("G1 X0 Y%.3f F%d S1.0 %n", stepsPerPixel * height, cutSpeed);
-			String command4 = String.format("G1 X0 Y0 F%d S1.0 %n", cutSpeed);
-			gcodeList.add(home);
-			gcodeList.add(command1);
-			gcodeList.add(command2);
-			gcodeList.add(command3);
-			gcodeList.add(command4);
 
 		}
 
@@ -87,6 +89,7 @@ public class GraycoderCore {
 			for (int j = 0; j < height; j++) {
 
 				int color = Color.HSBtoRGB(0.0f, 0.0f, grays[j][i]);
+				color += 0xFF000000;
 				newImage.setRGB(i, j, color);
 
 			}
@@ -107,7 +110,17 @@ public class GraycoderCore {
 
 			for (int j = 0; j < gray[0].length; j++) {
 
-				float powerLevel = ((1.0f - gray[i][j]) * width) + low;
+				float powerLevel;
+
+				if (gray[i][j] == 1.0f) {
+
+					powerLevel = 0.0f;
+
+				} else {
+
+					powerLevel = ((1.0f - gray[i][j]) * width) + low;
+
+				}
 				power[i][j] = powerLevel;
 
 			}
