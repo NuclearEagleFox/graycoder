@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class GraycoderCore {
 
-	public static ArrayList<String> convertToGCode(float[][] p, int travelSpeed, int cutSpeed, int outlinePasses, double stepsPerPixel) {
+	public static ArrayList<String> convertToGCode(float[][] p, int travelSpeed, int cutSpeed, int outlinePasses, int outlineSpeed, double stepsPerPixel) {
 
 		ArrayList<String> gcodeList = new ArrayList<String>();
 
@@ -20,10 +20,10 @@ public class GraycoderCore {
 
 		for (int i = 0; i < outlinePasses; i++) {
 
-			String command1 = String.format("G1 X%.3f Y0 F%d S1.0%n", stepsPerPixel * width, cutSpeed);
-			String command2 = String.format("G1 X%.3f Y%.3f F%d S1.0%n", stepsPerPixel * width, stepsPerPixel * height, cutSpeed);
-			String command3 = String.format("G1 X0 Y%.3f F%d S1.0%n", stepsPerPixel * height, cutSpeed);
-			String command4 = String.format("G1 X0 Y0 F%d S1.0%n", cutSpeed);
+			String command1 = String.format("G1 X%.3f Y0 F%d S1.0%n", stepsPerPixel * width, outlineSpeed);
+			String command2 = String.format("G1 X%.3f Y%.3f F%d S1.0%n", stepsPerPixel * width, stepsPerPixel * height, outlineSpeed);
+			String command3 = String.format("G1 X0 Y%.3f F%d S1.0%n", stepsPerPixel * height, outlineSpeed);
+			String command4 = String.format("G1 X0 Y0 F%d S1.0%n", outlineSpeed);
 			gcodeList.add(home);
 			gcodeList.add(command1);
 			gcodeList.add(command2);

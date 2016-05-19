@@ -179,8 +179,9 @@ public class GraycoderFrame extends JFrame implements ActionListener {
 			int travel = Integer.parseInt(travelField.getText());
 			int cut = Integer.parseInt(cutField.getText());
 			int passes = Integer.parseInt(passesField.getText());
+			int outSpeed = Integer.parseInt(settingsMap.get("outline speed"));
 			double steps = Double.parseDouble(stepsField.getText());
-			ArrayList<String> gcode = GraycoderCore.convertToGCode(power, travel, cut, passes, steps);
+			ArrayList<String> gcode = GraycoderCore.convertToGCode(power, travel, cut, passes, outSpeed, steps);
 			GraycoderCore.writeToFile(outputFile, gcode);
 
 		} else if ("image".equals(command)) {
